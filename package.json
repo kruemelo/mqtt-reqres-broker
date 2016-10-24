@@ -7,7 +7,7 @@
     "broker",
     "reqres"
   ],
-  "main": "./broker",
+  "main": "./lib/mqtt-reqres-broker.js",
   "bin": "./broker",
   "scripts": {
     "start": "./broker start",
@@ -21,13 +21,13 @@
   "license": "MIT",
   "dependencies": {
     "aedes": "^0.23.0",
-    "mqtt": "^2.0.1",
+    "commander": "^2.9.0",
     "update-notifier": "^1.0.2",
     "websocket-stream": "^3.3.0"
   },
   "devDependencies": {
+    "mqtt": "^2.0.1",
     "chai": "^3.5.0",
-    "commander": "^2.9.0",
     "debug": "^2.2.0",
     "groc": "^0.8.0",
     "jshint": "^2.9.3",
