@@ -17,165 +17,9 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         "projectPath": "README.md",
         "targetPath": "index",
         "pageTitle": "index",
-        "firstHeader": {
-          "type": "heading",
-          "data": {
-            "level": 1,
-            "title": "mqtt-reqres-broker",
-            "slug": "mqtt-reqres-broker",
-            "isFileHeader": true
-          },
-          "depth": 1,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "start mqtt reqres websocket broker",
-                "slug": "start-mqtt-reqres-websocket-broker"
-              },
-              "depth": 2,
-              "children": [
-                {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "start options",
-                    "slug": "start-options"
-                  },
-                  "depth": 3
-                }
-              ]
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "stop",
-                "slug": "stop"
-              },
-              "depth": 2
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "test",
-                "slug": "test"
-              },
-              "depth": 2
-            }
-          ]
-        },
-        "title": "mqtt-reqres-broker"
+        "title": "index"
       },
-      "depth": 1,
-      "outline": [
-        {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "start mqtt reqres websocket broker",
-            "slug": "start-mqtt-reqres-websocket-broker"
-          },
-          "depth": 2,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "start options",
-                "slug": "start-options"
-              },
-              "depth": 3
-            }
-          ]
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "stop",
-            "slug": "stop"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "test",
-            "slug": "test"
-          },
-          "depth": 2
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 1,
-            "title": "API",
-            "slug": "api"
-          },
-          "depth": 1,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "Methods",
-                "slug": "methods"
-              },
-              "depth": 2,
-              "children": [
-                {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "MqttReqResBroker()",
-                    "slug": "mqttreqresbroker"
-                  },
-                  "depth": 3
-                }, {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "initialize(options, callback)",
-                    "slug": "initializeoptions-callback"
-                  },
-                  "depth": 3
-                }, {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "start(options, callback)",
-                    "slug": "startoptions-callback"
-                  },
-                  "depth": 3
-                }, {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "close(callback)",
-                    "slug": "closecallback"
-                  },
-                  "depth": 3
-                }
-              ]
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "Example",
-                "slug": "example"
-              },
-              "depth": 2
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "Build docs",
-                "slug": "build-docs"
-              },
-              "depth": 2
-            }
-          ]
-        }
-      ]
+      "depth": 1
     }, {
       "type": "file",
       "data": {
@@ -227,8 +71,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "WebSocketBroker",
-                "slug": "websocketbroker"
+                "title": "MqttReqResBroker",
+                "slug": "mqttreqresbroker"
               },
               "depth": 2
             }, {
@@ -320,8 +164,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         "pageTitle": "package",
         "title": "package"
       },
-      "depth": 1,
-      "outline": []
+      "depth": 1
     }
   ];
 
