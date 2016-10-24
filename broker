@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+'use strict';
+
+
+/**
+ * Module dependencies
+ */
+ 
+// https://www.npmjs.com/package/commander
+const program = require('commander');
+const update = require('update-notifier');
+const pkg = require('./package');
+
+// Commands
+const run = require('./lib/run');
+
+// Update notify
+update({pkg}).notify();
+
+program
+  .version(pkg.version);
+
+program
+  .command('start')
+  .description('start mqtt reqres-broker')
+  .option('-h, --hostname [hostname]', 'hostname')
+  .option('-p, --port [port]', 'port')
+  .action(run);
+
+program.parse(process.argv);

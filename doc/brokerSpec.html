@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="en"><head><title>brokerSpec</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="brokerSpec"><meta name="groc-project-path" content="test/brokerSpec.js"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">test/brokerSpec.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h2 id="brokerspec">brokerSpec</h2>
+<p>usage: $ DEBUG=brokerSpec mocha</p></div></div><div class="code"><div class="wrapper"><span class="hljs-keyword">const</span> debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'mqtt-reqres-broker'</span>);
+<span class="hljs-keyword">const</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>);
+<span class="hljs-keyword">const</span> MqttReqResBroker = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/mqtt-reqres-broker.js'</span>);
+<span class="hljs-keyword">const</span> mqtt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mqtt'</span>);
+
+<span class="hljs-keyword">const</span> serverOptions = {
+  hostname: <span class="hljs-string">'localhost'</span>,
+  port: <span class="hljs-number">9999</span>
+};
+
+<span class="hljs-keyword">const</span> wsBroker = <span class="hljs-keyword">new</span> MqttReqResBroker();
+
+<span class="hljs-keyword">var</span> mqttClientA, mqttClientB;
+
+<span class="hljs-keyword">const</span> clientAId = <span class="hljs-string">'client-a'</span>, 
+  clientBId = <span class="hljs-string">'client-b'</span>;
+
+<span class="hljs-keyword">const</span> clientAChannelId = <span class="hljs-string">'client-a-channel-id'</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pcatch</span> (<span class="hljs-params">reason</span>) </span>{
+  debug(reason);
+  assert(!reason, reason);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">startServer</span> (<span class="hljs-params">callback</span>) </span>{
+
+  debug(<span class="hljs-string">'startServer()'</span>);
+
+  wsBroker.initialize(serverOptions, err =&gt; {
+    <span class="hljs-keyword">if</span> (err) {
+      <span class="hljs-built_in">console</span>.error(err.stack);
+      callback(err);
+    }
+    <span class="hljs-keyword">else</span> {
+      
+      wsBroker.start(<span class="hljs-literal">null</span>, err =&gt; {
+        <span class="hljs-keyword">if</span> (err) {
+          <span class="hljs-built_in">console</span>.error(err.stack);
+        } 
+        <span class="hljs-keyword">else</span> {
+          <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`broker running at http://<span class="hljs-subst">${wsBroker.hostname}</span>:<span class="hljs-subst">${wsBroker.port}</span>/`</span>);
+        }         
+        callback(err);
+      });
+      
+    }
+  });
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connectClient</span> (<span class="hljs-params">clientId</span>) </span>{
+  <span class="hljs-keyword">return</span> mqtt.connect({ 
+      protocol: <span class="hljs-string">'ws'</span>,
+      host: serverOptions.hostname, 
+      port: serverOptions.port,
+      clientId: clientId || <span class="hljs-built_in">Math</span>.random().toString(<span class="hljs-number">36</span>).substr(<span class="hljs-number">2</span>, <span class="hljs-number">23</span>)
+    });
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">onClientConnect</span> (<span class="hljs-params">brokerClient</span>) </span>{
+
+  assert.strictEqual(brokerClient.clientId, onClientConnect.mqttClient.clientId);
+
+  setTimeout(() =&gt; {
+    assert(onClientConnect.mqttClient.connected, <span class="hljs-string">'mqtt client should be connected'</span>);
+    onClientConnect.callbackFn();
+  }, <span class="hljs-number">100</span>);
+}
+
+onClientConnect.configure = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">mqttClient, callbackFn</span>) </span>{
+  onClientConnect.mqttClient = mqttClient;
+  onClientConnect.callbackFn = callbackFn;
+};
+
+describe(<span class="hljs-string">'broker'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+
+  before(done =&gt; {
+
+    startServer(err =&gt; {
+      wsBroker.mqtt.on(<span class="hljs-string">'client'</span>, onClientConnect);
+      done();
+    });
+  });
+
+
+  after(done =&gt; {
+    wsBroker.close(done);
+  });
+
+
+  describe(<span class="hljs-string">'connecting mqtt clients to broker via websockets'</span>, () =&gt; {
+
+    it(<span class="hljs-string">'should connect to mqtt client A'</span>, done =&gt; {
+      mqttClientA = connectClient(clientAId);
+      onClientConnect.configure(mqttClientA, done);
+    });
+
+    it(<span class="hljs-string">'should connect to mqtt client B'</span>, done =&gt; {
+      mqttClientB = connectClient(clientBId);
+      onClientConnect.configure(mqttClientB, done);
+    });
+  });
+
+
+  describe(<span class="hljs-string">'client subscriptions on topic "connect/&amp;lt;device-id&amp;gt;/+"'</span>, () =&gt; {
+
+    it(<span class="hljs-string">'should client A subscribe on topic "connect/'</span> + clientAId + <span class="hljs-string">'/+"'</span>, done =&gt; {
+      mqttClientA.subscribe(
+        <span class="hljs-string">`connect/<span class="hljs-subst">${clientAId}</span>/+`</span>, 
+        {qos: <span class="hljs-number">0</span>}, 
+        <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, granted</span>) </span>{
+          assert(!err);
+          assert.strictEqual(granted[<span class="hljs-number">0</span>].qos, <span class="hljs-number">0</span>);
+          done();
+        }
+      );
+    });
+
+
+    it(<span class="hljs-string">'should client B subscribe on topic "connect/'</span> + clientBId + <span class="hljs-string">'/+"'</span>, done =&gt; {
+      mqttClientA.subscribe(
+        <span class="hljs-string">`connect/<span class="hljs-subst">${clientBId}</span>/+`</span>, 
+        {qos: <span class="hljs-number">0</span>}, 
+        <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, granted</span>) </span>{
+          assert(!err);
+          assert.strictEqual(granted[<span class="hljs-number">0</span>].qos, <span class="hljs-number">0</span>);
+          done();
+        }
+      );
+    });
+
+
+    it(<span class="hljs-string">'should refuse to subscribe -t connect on invalid topics'</span>, done =&gt; {
+
+      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">promiseTest</span> (<span class="hljs-params">topic</span>) </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">resolve</span>) </span>{
+          mqttClientA.subscribe(
+            topic, 
+            {qos: <span class="hljs-number">0</span>}, 
+            <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, granted</span>) </span>{
+              assert(!err);
+              assert(granted[<span class="hljs-number">0</span>].qos &gt; <span class="hljs-number">2</span>, <span class="hljs-string">'should not have subscribed -t connect on topic '</span> + topic);
+              resolve();
+            }
+          );
+        });        
+      }
+
+      <span class="hljs-built_in">Promise</span>.all(
+        [</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>connect/${clientBId}/+</code>, </p></div></div><div class="code"><div class="wrapper">          <span class="hljs-string">`invalid/<span class="hljs-subst">${clientBId}</span>/+`</span>, 
+          <span class="hljs-string">`connect`</span>, 
+          <span class="hljs-string">`connect/`</span>, 
+          <span class="hljs-string">`connect//`</span>, 
+          <span class="hljs-string">`connect/+`</span>, 
+          <span class="hljs-string">`connect/#`</span>, 
+          <span class="hljs-string">`connect/<span class="hljs-subst">${clientBId}</span>/#`</span>, 
+          <span class="hljs-string">`connect/<span class="hljs-subst">${clientBId}</span>/`</span>, 
+          <span class="hljs-string">`connect/<span class="hljs-subst">${clientBId}</span>`</span>, 
+          <span class="hljs-string">`connect/<span class="hljs-subst">${clientBId}</span>/+/invalid`</span>,
+          <span class="hljs-string">`connect/<span class="hljs-subst">${clientBId}</span>/invalid/+`</span>
+        ].map(promiseTest)
+      )
+      .then(() =&gt; done())
+      .catch(pcatch);
+    });
+  });
+
+
+  describe(<span class="hljs-string">'connecting client A to client B'</span>, () =&gt; {
+
+    it(<span class="hljs-string">'should subscribe -t message/'</span> + clientBId + <span class="hljs-string">'/'</span> + clientAChannelId + <span class="hljs-string">'/#  '</span>, done =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>open a message channel to enable client-a to send messages:</p>
+<p>subscribe -t message/&lt;client-b-id&gt;/&lt;client-a-channel-id&gt;/#  </p></div></div><div class="code"><div class="wrapper">      mqttClientA.subscribe(
+        <span class="hljs-string">`message/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAChannelId}</span>/#`</span>, 
+        {qos: <span class="hljs-number">0</span>}, 
+        <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, granted</span>) </span>{
+          assert(!err);
+          assert.strictEqual(granted[<span class="hljs-number">0</span>].qos, <span class="hljs-number">0</span>);
+          done();
+        }
+      );
+    });
+
+
+    it(<span class="hljs-string">'should refuse to subscribe -t message on invalid topics'</span>, done =&gt; {
+
+      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">promiseTest</span> (<span class="hljs-params">topic</span>) </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">resolve</span>) </span>{
+          mqttClientA.subscribe(
+            topic, 
+            {qos: <span class="hljs-number">0</span>}, 
+            <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err, granted</span>) </span>{
+              assert(!err);
+              assert(granted[<span class="hljs-number">0</span>].qos &gt; <span class="hljs-number">2</span>, <span class="hljs-string">'should not have subscribed -t message on topic '</span> + topic);
+              resolve();
+            }
+          );
+        });        
+      }
+
+      <span class="hljs-built_in">Promise</span>.all(
+        [</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>message/${clientBId}/${clientAChannelId}/#</code>, </p></div></div><div class="code"><div class="wrapper">          <span class="hljs-string">`invalid/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAChannelId}</span>/#`</span>, 
+          <span class="hljs-string">`message`</span>, 
+          <span class="hljs-string">`message/`</span>, 
+          <span class="hljs-string">`message//`</span>, 
+          <span class="hljs-string">`message//+`</span>, 
+          <span class="hljs-string">`message/#`</span>, 
+          <span class="hljs-string">`message/<span class="hljs-subst">${clientBId}</span>/#`</span>, 
+          <span class="hljs-string">`message/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAChannelId}</span>/+`</span>,
+          <span class="hljs-string">`message/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAChannelId}</span>/+/bar`</span>,
+          <span class="hljs-string">`message/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAChannelId}</span>/foo/bar`</span>,
+          <span class="hljs-string">`message/from-client-id/`</span>, 
+          <span class="hljs-string">`message/from-client-id`</span>, 
+          <span class="hljs-string">`message/from-client-id/+`</span>,
+          <span class="hljs-string">`message/from-client-id/invalid/+`</span>
+        ].map(promiseTest)
+      )
+      .then(() =&gt; done())
+      .catch(pcatch);
+    });
+
+
+    it(<span class="hljs-string">`should publish -t connect/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAId}</span> -m <span class="hljs-subst">${clientAChannelId}</span>`</span>, done =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>client-a publishes client-a-channel-id as message to client-b:</p>
+<p>publish -t connect/&lt;client-b-id&gt;/&lt;client-a-id&gt; -m &lt;client-a-channel-id&gt; </p></div></div><div class="code"><div class="wrapper">      mqttClientA.publish(</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>topic</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-string">`connect/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAId}</span>`</span>, </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>message</p></div></div><div class="code"><div class="wrapper">        clientAChannelId,</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>options</p></div></div><div class="code"><div class="wrapper">        {qos: <span class="hljs-number">0</span>}, </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>callback</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err</span>) </span>{
+          assert(!err);
+          done();
+        }
+      );
+    });
+  });
+
+
+  describe(<span class="hljs-string">'sending messages between clients'</span>, () =&gt; {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>sending messages</p>
+<p>publish -t message/&lt;from&gt;/&lt;to&gt;</p>
+<p>publish -t message/&lt;from-device-id&gt;/&lt;to-channel-id&gt;</p>
+<p>publish -t message/&lt;client-b-id&gt;/&lt;client-a-channel-id&gt;/foo -m &#39;{packetId:123}&#39; </p></div></div><div class="code"><div class="wrapper">    it(<span class="hljs-string">'should enable client B to send messages to client A'</span>, done =&gt; {
+
+      mqttClientA.on(<span class="hljs-string">'message'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">topic, payload</span>) </span>{
+        <span class="hljs-keyword">if</span> (topic === <span class="hljs-string">`message/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAChannelId}</span>/foo`</span>) {
+          assert.strictEqual(payload.toString(), <span class="hljs-string">'bar'</span>);  
+          done();
+        }
+      });
+
+      mqttClientB.publish(</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>topic</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-string">`message/<span class="hljs-subst">${clientBId}</span>/<span class="hljs-subst">${clientAChannelId}</span>/foo`</span>, </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>message</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-string">'bar'</span>,</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>options</p></div></div><div class="code"><div class="wrapper">        {qos: <span class="hljs-number">0</span>}
+      );
+    });
+
+  });
+
+
+  describe(<span class="hljs-string">'unsubscription of clients'</span>, () =&gt; {
+
+    it(<span class="hljs-string">'should unsubscribe client A'</span>, done =&gt; {
+
+      assert(mqttClientA.connected);
+
+      mqttClientA.end(<span class="hljs-literal">false</span>, () =&gt; {
+        
+        assert(!mqttClientA.connected);
+        
+        mqttClientB.end(<span class="hljs-literal">false</span>, () =&gt; {
+          done();
+        });
+      });
+    });
+  });
+
+});</div></div></div></div></body></html>

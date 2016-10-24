@@ -1,0 +1,36 @@
+{
+  "name": "mqtt-reqres-broker",
+  "version": "0.0.1",
+  "description": "mqtt request/response websocket broker",
+  "keywords": [
+    "mqtt",
+    "broker",
+    "reqres"
+  ],
+  "main": "./broker",
+  "bin": "./broker",
+  "scripts": {
+    "start": "./broker start",
+    "start:debug": "DEBUG=broker:run,mqtt-reqres-broker ./broker start",
+    "test": "./node_modules/.bin/mocha",
+    "test:debug": "DEBUG=broker:run,mqtt-reqres-broker,brokerSpec ./node_modules/.bin/mocha",
+    "jshint": "./node_modules/.bin/jshint lib/mqtt-reqres-broker.js",
+    "build:docs": "./node_modules/.bin/groc"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "aedes": "^0.23.0",
+    "mqtt": "^2.0.1",
+    "update-notifier": "^1.0.2",
+    "websocket-stream": "^3.3.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "commander": "^2.9.0",
+    "debug": "^2.2.0",
+    "groc": "^0.8.0",
+    "jshint": "^2.9.3",
+    "mocha": "^3.1.2"
+  }
+}

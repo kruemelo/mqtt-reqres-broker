@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="en"><head><title>index</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content=""><meta name="groc-document-path" content="index"><meta name="groc-project-path" content="README.md"><link rel="stylesheet" type="text/css" media="all" href="assets/style.css"><script type="text/javascript" src="assets/behavior.js"></script><body><div id="meta"><div class="file-path">README.md</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="mqtt-reqres-broker">mqtt-reqres-broker</h1>
+<p>mqtt request/response broker based on <a href="https://github.com/mcollina/aedes">aedes</a></p>
+<h2 id="start-mqtt-reqres-websocket-broker">start mqtt reqres websocket broker</h2>
+<pre><code>// production
+$ npm start
+
+// starts with debug 
+$ npm run start:debug</code></pre>
+<p>make sure <code>broker</code> file is executable:</p>
+<pre><code>$ chmod u+x index.js</code></pre>
+<h3 id="start-options">start options</h3>
+<pre><code>$ npm start -- -h localhost -p 1883
+
+// or
+
+$ ./broker start -h 0.0.0.0 -p 1883
+
+// or debug
+
+$npm run start:debug</code></pre>
+<h2 id="stop">stop</h2>
+<p>press <code>Ctrl</code> + <code>c</code></p>
+<pre><code>$ ./broker start
+^C
+$</code></pre>
+<h2 id="test">test</h2>
+<p>runs mocha specs in /test</p>
+<pre><code>$ npm test
+
+// or
+
+$ npm run test:debug</code></pre>
+<p>see all npm tasks defined in <a href="./package.html">package.json</a>.</p>
+<h1 id="api">API</h1>
+<pre><code>var MqttReqResBroker = require(&#39;mqtt-reqres-broker&#39;);</code></pre>
+<h2 id="methods">Methods</h2>
+<h3 id="mqttreqresbroker">MqttReqResBroker()</h3>
+<p>constructor</p>
+<h3 id="initializeoptions-callback">initialize(options, callback)</h3>
+<p>send a request to an other client.</p>
+<p><strong>options</strong>:</p>
+<ul>
+<li>hostname string optional default &#39;localhost&#39;</li>
+<li>port number optional default 1883</li>
+</ul>
+<p><strong>callback</strong>
+callback function called when initialization done. only arg is &quot;err&quot;.</p>
+<p><strong>returns</strong> instance of MqttReqResBroker</p>
+<h3 id="startoptions-callback">start(options, callback)</h3>
+<p><strong>options</strong> null requires; takes no options currently</p>
+<p><strong>callback</strong> function required; callback </p>
+<h3 id="closecallback">close(callback)</h3>
+<p>closes the broker websocket and http servers.</p>
+<h2 id="example">Example</h2>
+<pre><code>var broker = new MqttReqResBroker()
+
+broker.initialize(
+  {
+    hostname: &#39;127.0.0.1&#39;,
+    port: 9999
+  }, function (err) {
+
+    broker.start(null, function (err) {
+      // ..  
+
+    });
+  }
+);</code></pre>
+<h2 id="build-docs">Build docs</h2>
+<p>create annotated source documentation in <code>doc/</code> folder, uses <a href="https://github.com/nevir/groc">groc</a></p>
+<pre><code>$ npm run build:docs</code></pre></div></div></div></div></body></html>

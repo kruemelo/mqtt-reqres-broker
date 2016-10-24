@@ -1,0 +1,11 @@
+{
+  "glob": [
+    "package.json",
+    "lib/mqtt-reqres-broker.js",   
+    "lib/run.js",   
+    "lib/MqttReqResStreamClient.js",    
+    "test/**/*.js",
+  	"README.md"
+  ],
+  "except": []
+}
