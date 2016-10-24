@@ -85,7 +85,7 @@ callback function called when initialization done. only arg is "err".
 
 ### start(options, callback)
 
-**options** null requires; takes no options currently
+**options** null required; currently takes no options
 
 
 **callback** function required; callback 

@@ -221,7 +221,69 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "pageTitle": "lib/mqtt-reqres-broker",
             "title": "mqtt-reqres-broker"
           },
-          "depth": 2
+          "depth": 2,
+          "outline": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "WebSocketBroker",
+                "slug": "websocketbroker"
+              },
+              "depth": 2
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "broker class",
+                "slug": "broker-class"
+              },
+              "depth": 2,
+              "children": [
+                {
+                  "type": "heading",
+                  "data": {
+                    "level": 3,
+                    "title": "constructor",
+                    "slug": "constructor"
+                  },
+                  "depth": 3
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 3,
+                    "title": "initialize(options, callback)",
+                    "slug": "initializeoptions-callback"
+                  },
+                  "depth": 3
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 3,
+                    "title": "initializeMQTTEventHandlers (options, callback)",
+                    "slug": "initializemqtteventhandlers-options-callback"
+                  },
+                  "depth": 3
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 3,
+                    "title": "start (options, callback)",
+                    "slug": "start-options-callback"
+                  },
+                  "depth": 3
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 3,
+                    "title": "close (callback)",
+                    "slug": "close-callback"
+                  },
+                  "depth": 3
+                }
+              ]
+            }
+          ]
         }, {
           "type": "file",
           "data": {
@@ -258,7 +320,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         "pageTitle": "package",
         "title": "package"
       },
-      "depth": 1
+      "depth": 1,
+      "outline": []
     }
   ];
 
